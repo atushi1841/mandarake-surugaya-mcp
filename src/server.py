@@ -155,8 +155,8 @@ def _format_mandarake_results(result: dict[str, Any]) -> str:
     lines = [f"**Mandarake オークション検索結果** ({len(items)}件)", ""]
     for i, item in enumerate(items[:20], 1):
         title = item.get("title") or item.get("name") or "（タイトルなし）"
-        price = item.get("price") or item.get("currentPrice") or "?"
-        url = item.get("url") or item.get("link") or ""
+        price = item.get("current_price_jpy") or item.get("start_price_jpy") or "?"
+        url = item.get("item_url") or ""
         lines.append(f"{i}. **{title}** — ¥{price}")
         if url:
             lines.append(f"   {url}")
@@ -177,8 +177,8 @@ def _format_surugaya_results(result: dict[str, Any]) -> str:
     lines = [f"**Suruga-ya 商品検索結果** ({len(items)}件)", ""]
     for i, item in enumerate(items[:20], 1):
         title = item.get("title") or item.get("name") or "（タイトルなし）"
-        price = item.get("price") or item.get("priceYen") or "?"
-        url = item.get("url") or item.get("link") or ""
+        price = item.get("used_price_jpy") or item.get("new_price_jpy") or item.get("marketplace_price_jpy") or "?"
+        url = item.get("url") or ""
         lines.append(f"{i}. **{title}** — ¥{price}")
         if url:
             lines.append(f"   {url}")
@@ -274,7 +274,7 @@ def get_server() -> FastMCP:
 
         # Actor への入力を構築
         actor_input = {
-            "keyword": keyword,
+            "searchKeyword": keyword,
             "maxResults": min(max_results, 50),
         }
         if category:
@@ -311,11 +311,10 @@ def get_server() -> FastMCP:
             keyword: 検索キーワード（例: "フィギュア エヴァ"）
             max_results: 各プラットフォームから取得する最大件数（デフォルト 10, 最大 50）
         """
-        await Actor.charge("price-comparison")
 
         # 両方のActorを並列実行
         manda_input = {"mode": "search", "keyword": keyword, "maxResults": min(max_results, 50)}
-        suruga_input = {"keyword": keyword, "maxResults": min(max_results, 50)}
+        suruga_input = {"searchKeyword": keyword, "maxResults": min(max_results, 50)}
 
         manda_task = _call_actor(MANDARAKE_ACTOR_ID, manda_input, "Mandarake Auction Scraper")
         suruga_task = _call_actor(SURUGAYA_ACTOR_ID, suruga_input, "Suruga-ya Scraper")
@@ -429,15 +428,15 @@ def get_server() -> FastMCP:
                     "name": "Mandarake Auction Scraper",
                     "actorId": MANDARAKE_ACTOR_ID,
                     "description": "まんだらけオークションから商品情報をスクレイピング",
-                    "priceUsd": 0.01,
-                    "monetization": "アクティブ（Pay-Per-Event $0.01/1k）",
+                    "priceUsd": 0.005,
+                    "monetization": "Pay-Per-Event ($0.005/run + $0.001/search)",
                 },
                 {
                     "name": "Suruga-ya Japan Used Hobby Prices",
                     "actorId": SURUGAYA_ACTOR_ID,
                     "description": "駿河屋から中古ホビー商品の価格情報をスクレイピング",
-                    "priceUsd": 0.01,
-                    "monetization": "設定済み（要支払いイベント設定）",
+                    "priceUsd": 0.005,
+                    "monetization": "Pay-Per-Event ($0.005/run + $0.01/search)",
                 },
             ],
             "howToUse": (
