@@ -1,135 +1,94 @@
 # Mandarake & Suruga-ya MCP Server
 
-**まんだらけオークション**と**駿河屋**のスクレイパーをAIエージェントからツールとして呼び出せるMCPサーバー。
+An MCP server that gives AI agents real-time access to Mandarake auction and Suruga-ya price data for Japanese collectibles. Connect from Claude Desktop, Claude Code, ChatGPT, Cursor, or any MCP client.
 
-Claude Desktop, Claude Code, ChatGPT, Cursor, VS Code (Genie) などのMCPクライアントから
-中古ホビー価格をリアルタイム検索できます。
+まんだらけオークションと駿河屋の中古ホビー価格をAIエージェントからリアルタイム検索できるMCPサーバー。
 
-## 機能
+[![Apify Store](https://img.shields.io/badge/Apify-Store-blue)](https://apify.com/fruitful_quintessence/mandarake-surugaya-mcp)
+[![MIT License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-| ツール名 | 説明 | 価格 |
-|---------|------|------|
-| `search_mandarake_auction` | まんだらけオークションで商品検索 | $0.01/回 |
-| `search_surugaya` | 駿河屋（中古ホビー）で商品検索 | $0.01/回 |
-| `compare_prices` | Suruga-ya × Mandarake 価格比較（同一商品の価格差を自動マッチング） | $0.02/回 |
-| `get_actor_info` | 利用可能なActor一覧を表示 | 無料 |
+---
 
-## デプロイ状態
+## Tools
 
-| 項目 | 状態 |
-|------|------|
-| Actor ID | `xUYsD13SVHHRFQS1H` |
-| 最新ビルド | `0.1.8` (SUCCEEDED) |
-| MCPエンドポイント | `https://fruitful-quintessence--mandarake-surugaya-mcp.apify.actor/mcp` |
-| Mandarake検索 | ✅ 動作確認済み (24件返却) |
-| Suruga-ya検索 | ✅ 動作確認済み |
-| 価格比較 | ✅ 動作確認済み（compare_prices ツール） |
-| PPE課金 | ✅ 設定済み ($0.01/回) |
+| Tool | Description | Price |
+|------|-------------|-------|
+| `search_mandarake_auction` | Search Mandarake auction listings by keyword | $0.001/call |
+| `search_surugaya` | Search Suruga-ya product prices by keyword | $0.001/call |
+| `compare_prices` | Cross-reference prices between both marketplaces | $0.001/call |
+| `get_actor_info` | List available tools and usage info | Free |
 
-## ファイル構成
+## Quick Start
 
-```
-apify-mcp-server/
-├── .actor/
-│   ├── actor.json          # Apify Actor 設定（Standby, MCPパス）
-│   └── pay_per_event.json  # Pay-Per-Event 課金設定
-├── src/
-│   ├── __init__.py
-│   ├── main.py             # uvicorn エントリポイント
-│   ├── server.py           # MCPサーバーファクトリー（ツール定義）
-│   └── apify_shim.py       # ローカル実行用shim
-├── tests/
-│   └── smoke.sh            # MCPプロトコルスモークテスト
-├── Dockerfile
-├── requirements.txt
-└── README.md
-```
+### Claude Desktop
 
-## クイックスタート
-
-### 1. 依存関係のインストール
-
-```bash
-cd /home/atushi/apify-mcp-server
-pip install -r requirements.txt
-```
-
-### 2. 環境変数の設定
-
-```bash
-export APIFY_TOKEN="your-apify-api-token"
-```
-
-### 3. ローカルで起動
-
-```bash
-python -m src.main
-```
-
-サーバーが `http://localhost:3000/mcp` で起動します。
-
-### 4. スモークテスト
-
-```bash
-./tests/smoke.sh
-```
-
-### 5. Apify にデプロイ
-
-⚠️ **重要**: プロジェクトに `node_modules/` があるとZIPが壊れます。
-デプロイ前に必ず削除するか、クリーンなコピーから `apify push` してください。
-
-```bash
-# クリーンなディレクトリで実行
-mkdir -p /tmp/apify-clean && cp -r src/ .actor/ Dockerfile requirements.txt README.md tests/ /tmp/apify-clean/
-cd /tmp/apify-clean && apify push --version 0.1
-```
-
-デプロイ後、以下のURLでMCPクライアントから接続:
-```
-https://fruitful-quintessence--mandarake-surugaya-mcp.apify.actor/mcp
-```
-
-### 6. MCPクライアント設定（Claude Desktop等）
+Add to your `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "mandarake-surugaya": {
-      "url": "https://fruitful-quintessence--mandarake-surugaya-mcp.apify.actor/mcp",
-      "headers": {
-        "Authorization": "Bearer <YOUR_APIFY_API_TOKEN>"
-      }
+      "url": "https://fruitful-quintessence--mandarake-surugaya-mcp.apify.actor/mcp"
     }
   }
 }
 ```
 
-## 課金設計
+### Claude Code
 
-- **search_mandarake_auction**: 1回 $0.01（`mandarake-search` イベント）
-- **search_surugaya**: 1回 $0.01（`surugaya-search` イベント）
-- Apifyの月$5無料クレジット内なら無料
-- 無料枠超過後、ユーザーに自動請求
+```bash
+claude mcp add mandarake-surugaya \
+  --transport http \
+  https://fruitful-quintessence--mandarake-surugaya-mcp.apify.actor/mcp
+```
 
-## MCPサーバーの仕組み
+### Any MCP Client (Streamable HTTP)
 
 ```
-┌─────────────────┐     JSON-RPC 2.0      ┌──────────────────┐
-│  MCP Client      │ ──────────────────▶   │  MCP Server      │
-│ (Claude/ChatGPT) │ ◀──────────────────   │  (FastMCP)       │
-└─────────────────┘                        └────────┬─────────┘
-                                                     │
-                                            HTTP POST /v2/acts/{id}/runs
-                                                     │
-                                            ┌────────▼─────────┐
-                                            │  Apify Platform   │
-                                            │  ┌─────────────┐ │
-                                            │  │ Mandarake   │ │
-                                            │  │ Actor       │ │
-                                            │  ├─────────────┤ │
-                                            │  │ Suruga-ya   │ │
-                                            │  │ Actor       │ │
-                                            │  └─────────────┘ │
-                                            └──────────────────┘
+Endpoint: https://fruitful-quintessence--mandarake-surugaya-mcp.apify.actor/mcp
 ```
+
+## Output Sample
+
+```
+Tool: search_mandarake_auction("フィギュア")
+
+Results:
+1. ドラゴンボール フィギュア | ¥3,000 | 5 bids | 12 watchers | まんだらけ 中野店
+2. ワンピース フィギュア | ¥2,500 | 3 bids | 8 watchers | まんだらけ 渋谷店
+
+Tool: search_surugaya("フィギュア ドラゴンボール")
+
+Results:
+1. ドラゴンボールZ フィギュア | Used: ¥3,500 | List: ¥5,000 | In stock
+2. ドラゴンボール フィギュア | Used: ¥1,200 | List: ¥2,000 | In stock
+```
+
+## Use Cases
+
+- **AI price research agent** — Ask "What's the cheapest ポケモン card on Suruga-ya and Mandarake right now?"
+- **Resale opportunity detection** — "Find items where the Mandarake auction price is below Suruga-ya's used price"
+- **Collectibles portfolio tracking** — "Check current prices for my collection across both marketplaces"
+
+## Pricing
+
+- **$0.001 per tool call** (search_mandarake_auction, search_surugaya, compare_prices)
+- **$0.001 per actor start** (one fee per session)
+- **$0.00001 per result item** (dataset storage fee)
+- Typical single query: **$0.001–$0.002** total
+
+## FAQ
+
+**What MCP transport is supported?** Streamable HTTP (`/mcp`) and SSE (`/sse`).
+
+**Is this free to try?** Yes — Apify provides free platform credits for new users. A few test queries cost pennies.
+
+**Can I use both tools in one conversation?** Yes. The server exposes all tools simultaneously; your AI agent picks the right one.
+
+**Do I need an API key?** No. Just point your MCP client at the endpoint URL.
+
+## Changelog
+
+- v0.1.8 (2026-07-29): Reduced pricing — $0.001 per tool call. Updated README.
+- v0.1.7 (2026-07-29): PPE pricing configured
+- v0.1.0 (2026-07-27): Initial release with Mandarake and Suruga-ya search tools
