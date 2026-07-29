@@ -15,7 +15,8 @@ An MCP server that gives AI agents real-time access to Mandarake auction and Sur
 |------|-------------|-------|
 | `search_mandarake_auction` | Search Mandarake auction listings by keyword | $0.001/call |
 | `search_surugaya` | Search Suruga-ya product prices by keyword | $0.001/call |
-| `compare_prices` | Cross-reference prices between both marketplaces | $0.001/call |
+| `search_rakuten` | Search Rakuten Ichiba products via official API | $0.001/call |
+| `compare_prices` | Cross-reference prices across Suruga-ya, Mandarake, and Rakuten | $0.001/call |
 | `get_actor_info` | List available tools and usage info | Free |
 
 ## Quick Start
@@ -62,13 +63,21 @@ Tool: search_surugaya("フィギュア ドラゴンボール")
 Results:
 1. ドラゴンボールZ フィギュア | Used: ¥3,500 | List: ¥5,000 | In stock
 2. ドラゴンボール フィギュア | Used: ¥1,200 | List: ¥2,000 | In stock
+
+Tool: compare_prices("フィギュア ドラゴンボール")
+
+Results:
+| # | 商品名 | 駿河屋 | まんだらけ | 楽天 | 最安 |
+| 1 | ドラゴンボールZ フィギュア... | ¥3,500 | ¥3,000 | ¥3,800 | 🟢まんだらけ |
+| 2 | ドラゴンボール フィギュア... | ¥1,200 | ¥2,500 | ¥1,500 | 🟢駿河屋 |
 ```
 
 ## Use Cases
 
-- **AI price research agent** — Ask "What's the cheapest ポケモン card on Suruga-ya and Mandarake right now?"
-- **Resale opportunity detection** — "Find items where the Mandarake auction price is below Suruga-ya's used price"
-- **Collectibles portfolio tracking** — "Check current prices for my collection across both marketplaces"
+- **AI price research agent** — Ask "What's the cheapest ポケモン card across Mandarake, Suruga-ya, and Rakuten right now?"
+- **Resale opportunity detection** — "Find items where one marketplace is 30% cheaper than the others"
+- **Collectibles portfolio tracking** — "Check current prices for my collection across all three marketplaces"
+- **Best price finder** — Search all three platforms with one command and see a unified comparison table
 
 ## Pricing
 

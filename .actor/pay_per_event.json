@@ -4,13 +4,13 @@
     "",
     "エコノミクス（2025年4月以降）:",
     "  - 全Apifyユーザーに月$5の無料クレジット",
-    "  - $0.01/コールなら月500回まで無料",
-    "  - 無料枠消化後に初めて課金発生",
+    "  - $0.001/コールなら月5,000回まで無料",
     "",
     "価格戦略:",
-    "  - 'mandarake-search' ($0.01): Mandarake Auction Scraper の1回の実行",
-    "  - 'surugaya-search' ($0.01): Suruga-ya Scraper の1回の実行",
-    "  - 両方とも軽量API呼び出しのため$0.01に設定",
+    "  - 'mandarake-search' ($0.001): Mandarake Auction Scraper の1回の実行",
+    "  - 'surugaya-search' ($0.001): Suruga-ya Scraper の1回の実行",
+    "  - 'rakuten-search' ($0.001): Rakuten Japan MCP の1回の実行",
+    "  - 全ツール$0.001で統一（2026-07-29価格改定）",
     "",
     "startedAt の注意点:",
     "  - startedAt は push 日から最低14日後に設定が必要",
@@ -22,11 +22,16 @@
   "mandarake-search": {
     "eventTitle": "Mandarake Auction Search",
     "eventDescription": "Mandarake Auction Scraper の1回の実行。キーワード検索とオークション結果の取得。",
-    "eventPriceUsd": 0.01
+    "eventPriceUsd": 0.001
   },
   "surugaya-search": {
     "eventTitle": "Suruga-ya Product Search",
     "eventDescription": "Suruga-ya Japan Used Hobby Prices の1回の実行。商品検索と価格情報の取得。",
-    "eventPriceUsd": 0.01
+    "eventPriceUsd": 0.001
+  },
+  "rakuten-search": {
+    "eventTitle": "Rakuten Product Search",
+    "eventDescription": "Rakuten Japan MCP の1回の実行。楽天市場の商品検索。",
+    "eventPriceUsd": 0.001
   }
 }
