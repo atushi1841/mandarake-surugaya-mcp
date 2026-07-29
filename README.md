@@ -78,6 +78,11 @@ Results:
 - **Resale opportunity detection** — "Find items where one marketplace is 30% cheaper than the others"
 - **Collectibles portfolio tracking** — "Check current prices for my collection across all three marketplaces"
 - **Best price finder** — Search all three platforms with one command and see a unified comparison table
+- **Automated alerts** — Schedule regular runs and send results to Slack/Discord via Apify webhooks
+
+## Integrations
+
+This server runs on Apify. All underlying actors support **Apify MCP Connectors** (Slack, Notion, Supabase, GitHub) — connect directly from the actor's run screen.
 
 ## Pricing
 
