@@ -1,0 +1,28 @@
+{
+  "$schema": "https://apify.com/schemas/v1/actor.ide.json",
+  "actorSpecification": 1,
+  "name": "mandarake-surugaya-mcp",
+  "title": "Mandarake & Suruga-ya MCP Server",
+  "description": "MCPサーバー — Mandarake Auction Scraper と Suruga-ya Japan Used Hobby Prices をAIエージェント（Claude, ChatGPT等）からツールとして呼び出せます。",
+  "version": "0.1",
+  "buildTag": "latest",
+  "usesStandbyMode": true,
+  "webServerMcpPath": "/mcp",
+  "meta": {
+    "templateId": "python-mcp-apify-actors"
+  },
+  "input": {
+    "title": "Actor input schema",
+    "description": "MCPサーバーはStandbyモードで動作 — 入力はMCPツール呼び出し経由で行われ、Actor入力からは受け取りません。",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {},
+    "required": []
+  },
+  "dockerfile": "../Dockerfile",
+  "categories": [
+    "MCP_SERVERS",
+    "SHOPPING",
+    "DATA_EXTRACTION"
+  ]
+}

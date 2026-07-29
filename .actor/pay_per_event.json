@@ -1,0 +1,32 @@
+{
+  "_comment": [
+    "Pay-Per-Event (PPE) 設定 — MCPツール呼び出しごとに課金します。",
+    "",
+    "エコノミクス（2025年4月以降）:",
+    "  - 全Apifyユーザーに月$5の無料クレジット",
+    "  - $0.01/コールなら月500回まで無料",
+    "  - 無料枠消化後に初めて課金発生",
+    "",
+    "価格戦略:",
+    "  - 'mandarake-search' ($0.01): Mandarake Auction Scraper の1回の実行",
+    "  - 'surugaya-search' ($0.01): Suruga-ya Scraper の1回の実行",
+    "  - 両方とも軽量API呼び出しのため$0.01に設定",
+    "",
+    "startedAt の注意点:",
+    "  - startedAt は push 日から最低14日後に設定が必要",
+    "  - それより近い日付を設定すると 403 エラー",
+    "  - 安全のため15〜20日後に設定",
+    "",
+    "ドキュメント: https://docs.apify.com/platform/actors/running/pay-per-event"
+  ],
+  "mandarake-search": {
+    "eventTitle": "Mandarake Auction Search",
+    "eventDescription": "Mandarake Auction Scraper の1回の実行。キーワード検索とオークション結果の取得。",
+    "eventPriceUsd": 0.01
+  },
+  "surugaya-search": {
+    "eventTitle": "Suruga-ya Product Search",
+    "eventDescription": "Suruga-ya Japan Used Hobby Prices の1回の実行。商品検索と価格情報の取得。",
+    "eventPriceUsd": 0.01
+  }
+}

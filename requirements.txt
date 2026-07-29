@@ -1,0 +1,11 @@
+# Apify SDK + FastMCP
+apify >= 3.0.0, < 4.0.0
+apify-client >= 1.0.0
+fastmcp >= 3.0.0, < 4.0.0
+mcp >= 1.25.0, < 2.0.0
+
+# HTTP server
+uvicorn >= 0.30.0
+
+# HTTP client for calling Apify Actors via API (fallback)
+httpx >= 0.27.0
