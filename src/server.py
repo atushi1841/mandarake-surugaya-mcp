@@ -156,13 +156,37 @@ def _format_mandarake_results(result: dict[str, Any]) -> str:
     lines = [f"**Mandarake オークション検索結果** ({len(items)}件)", ""]
     for i, item in enumerate(items[:20], 1):
         title = item.get("title") or item.get("name") or "（タイトルなし）"
-        price = item.get("current_price_jpy") or item.get("start_price_jpy") or "?"
+        current_price = item.get("current_price_jpy")
+        start_price = item.get("start_price_jpy")
+        price_to_show = current_price or start_price or "?"
+        bid_count = item.get("bid_count")
+        watch_count = item.get("watch_count")
+        shop_name = item.get("shop_name")
+        image_url = item.get("image_url")
+        category = item.get("category") or item.get("auction_type")
         url = item.get("item_url") or ""
-        lines.append(f"{i}. **{title}** — ¥{price}")
+
+        lines.append(f"{i}. **{title}**")
+        # Price line
+        price_str = f"¥{price_to_show}" if isinstance(price_to_show, (int, float)) else ""
+        if current_price and start_price and current_price != start_price:
+            price_str += f"（開始価格¥{start_price}）"
+        lines.append(f"   価格: {price_str}")
+        if bid_count is not None:
+            lines.append(f"   入札数: {bid_count}")
+        if watch_count is not None:
+            lines.append(f"   ウォッチ数: {watch_count}")
+        if shop_name:
+            lines.append(f"   ショップ: {shop_name}")
+        if category:
+            lines.append(f"   カテゴリ: {category}")
+        if image_url:
+            lines.append(f"   ![img]({image_url})")
         if url:
-            lines.append(f"   {url}")
+            lines.append(f"   [リンク]({url})")
+        lines.append("")
     if len(items) > 20:
-        lines.append(f"\n...他 {len(items) - 20} 件")
+        lines.append(f"...他 {len(items) - 20} 件")
 
     lines.append(f"\nRun ID: `{result.get('runId')}`")
     lines.append(f"データセット: `{result.get('datasetId')}`")
@@ -178,13 +202,37 @@ def _format_surugaya_results(result: dict[str, Any]) -> str:
     lines = [f"**Suruga-ya 商品検索結果** ({len(items)}件)", ""]
     for i, item in enumerate(items[:20], 1):
         title = item.get("title") or item.get("name") or "（タイトルなし）"
-        price = item.get("used_price_jpy") or item.get("new_price_jpy") or item.get("marketplace_price_jpy") or "?"
+        used_price = item.get("used_price_jpy")
+        new_price = item.get("new_price_jpy")
+        marketplace_price = item.get("marketplace_price_jpy")
+        price = used_price or new_price or marketplace_price or "?"
+        list_price = item.get("list_price_jpy")
+        brand = item.get("brand")
+        in_stock = item.get("in_stock")
+        image_url = item.get("image_url")
         url = item.get("url") or ""
-        lines.append(f"{i}. **{title}** — ¥{price}")
+
+        # Price line with discount info
+        price_str = f"¥{price}" if isinstance(price, (int, float)) else ""
+        if list_price:
+            price_str += f"（定価¥{list_price}）"
+            if isinstance(used_price, (int, float)) and isinstance(list_price, (int, float)):
+                discount = list_price - used_price
+                if discount >= 500:
+                    discount_pct = int((discount / list_price) * 100)
+                    price_str += f"（定価比-{discount_pct}%）"
+
+        brand_str = f" ブランド: {brand}" if brand else ""
+        stock_str = " 🟢在庫あり" if in_stock else (" 🔴在庫なし" if in_stock is False else "")
+        lines.append(f"{i}. **{title}**")
+        lines.append(f"   価格: {price_str}{brand_str}{stock_str}")
+        if image_url:
+            lines.append(f"   ![img]({image_url})")
         if url:
-            lines.append(f"   {url}")
+            lines.append(f"   [リンク]({url})")
+        lines.append("")
     if len(items) > 20:
-        lines.append(f"\n...他 {len(items) - 20} 件")
+        lines.append(f"...他 {len(items) - 20} 件")
 
     lines.append(f"\nRun ID: `{result.get('runId')}`")
     lines.append(f"データセット: `{result.get('datasetId')}`")
@@ -456,6 +504,8 @@ def get_server() -> FastMCP:
                     "rakuten_url": None,
                     "match_type": "surugaya_vs_mandarake",
                     "match_score": round(best_score, 3),
+                    "surugaya_list_price": si.get("list_price_jpy"),
+                    "mandarake_list_price": best_mi.get("list_price_jpy"),
                 })
 
         # Compare Suruga-ya ↔ Rakuten
@@ -510,6 +560,11 @@ def get_server() -> FastMCP:
                 sp = f"¥{m['surugaya_price']:,}" if m.get('surugaya_price') else "-"
                 mp = f"¥{m['mandarake_price']:,}" if m.get('mandarake_price') else "-"
                 rp = f"¥{m['rakuten_price']:,}" if m.get('rakuten_price') else "-"
+                # List price and discount info
+                s_list = m.get("surugaya_list_price")
+                if isinstance(s_list, (int,float)) and m.get('surugaya_price'):
+                    s_discount = int((s_list - m['surugaya_price']) / s_list * 100)
+                    sp += f" (-{s_discount}%)" if s_discount > 0 else " (定価以上)"
                 # Determine cheapest
                 prices_with_platform = []
                 if m.get('surugaya_price'): prices_with_platform.append(('駿河屋', m['surugaya_price']))
