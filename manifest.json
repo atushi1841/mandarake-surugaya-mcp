@@ -1,0 +1,71 @@
+{
+  "manifest_version": "0.4",
+  "name": "mandarake-surugaya-mcp",
+  "display_name": "Mandarake & Suruga-ya MCP — Japanese Collectibles Price Comparison",
+  "version": "0.1.0",
+  "description": "Search Mandarake auctions, Suruga-ya collectibles, and Rakuten Ichiba via one MCP server. Compare prices across Japan's top hobby/collectibles shops in a single tool call.",
+  "long_description": "# Mandarake & Suruga-ya MCP Server\n\nAn MCP server that gives AI agents real-time access to Mandarake auction and Suruga-ya price data for Japanese collectibles.\n\n## Tools\n\n| Tool | Description |\n|------|-------------|\n| `search_mandarake_auction` | Search Mandarake auction listings by keyword |\n| `search_surugaya` | Search Suruga-ya product prices by keyword |\n| `search_rakuten` | Search Rakuten Ichiba products via official API |\n| `compare_prices` | Cross-reference prices across Suruga-ya, Mandarake, and Rakuten |\n| `get_actor_info` | List available tools and usage info |\n\n## Pricing\n$0.001 per tool call (Apify PPE).\n\n## Requirements\nPython >=3.10, uv. Set `APIFY_TOKEN` environment variable.\n\n## Repository\nhttps://github.com/atushi1841/mandarake-surugaya-mcp\n\n## Apify Store\nhttps://apify.com/fruitful_quintessence/mandarake-surugaya-mcp",
+  "author": {
+    "name": "atushi1841",
+    "url": "https://github.com/atushi1841"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atushi1841/mandarake-surugaya-mcp"
+  },
+  "homepage": "https://apify.com/fruitful_quintessence/mandarake-surugaya-mcp",
+  "server": {
+    "type": "python",
+    "entry_point": "src/main.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "${__dirname}",
+        "src/main.py"
+      ]
+    }
+  },
+  "compatibility": {
+    "platforms": ["darwin", "linux", "win32"],
+    "runtimes": {
+      "python": ">=3.10"
+    }
+  },
+  "tools": [
+    {
+      "name": "search_mandarake_auction",
+      "description": "Search Mandarake auction listings by keyword. Returns title, price, URL, condition, and seller info."
+    },
+    {
+      "name": "search_surugaya",
+      "description": "Search Suruga-ya (駿河屋) product prices by keyword. Returns title, price, URL, category, and condition."
+    },
+    {
+      "name": "search_rakuten",
+      "description": "Search Rakuten Ichiba products via official Rakuten API. Returns item name, price, shop, URL, review count."
+    },
+    {
+      "name": "compare_prices",
+      "description": "Cross-reference prices across Suruga-ya, Mandarake, and Rakuten for the same keyword. Shows price spread between platforms."
+    },
+    {
+      "name": "get_actor_info",
+      "description": "List available tools, actor IDs, and pricing information."
+    }
+  ],
+  "keywords": [
+    "japan",
+    "mandarake",
+    "surugaya",
+    "anime",
+    "figures",
+    "collectibles",
+    "doubutsu",
+    "manga",
+    "light novel",
+    "garage kit",
+    "rakuten"
+  ]
+}
