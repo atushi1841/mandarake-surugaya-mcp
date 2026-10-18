@@ -106,3 +106,9 @@ This server runs on Apify. All underlying actors support **Apify MCP Connectors*
 - v0.1.8 (2026-07-29): Reduced pricing — $0.001 per tool call. Updated README.
 - v0.1.7 (2026-07-29): PPE pricing configured
 - v0.1.0 (2026-07-27): Initial release with Mandarake and Suruga-ya search tools
+
+---
+## Data & Store
+
+- **Apify Store:** https://apify.com/fruitful_quintessence
+- **Gumroad datasets:** https://atushi5.gumroad.com/l/kutuxe
